@@ -1,4 +1,22 @@
-var game = new Phaser.Game(1280, 720, Phaser.CANVAS, 'game-demo', { preload: preload, create: create });
+let config = {
+    type: Phaser.AUTO,
+    width: 1280,
+    height: 720,
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    },
+    physics: {
+        default: 'arcade'
+    },
+    parent: 'game',
+    transparent: true
+};
+
+var game = new Phaser.Game(config);
+
+var ball;
 
 function preload() {
 
@@ -8,37 +26,39 @@ function preload() {
     //  string by which we'll identify the image later in our code.
 
     //  The second parameter is the URL of the image (relative)
-    game.load.image('background', '/images/background.jpg');
-    game.load.image('ball', '/images/ball.png');
+    this.load.image('background', '/images/background.jpg');
+    this.load.image('ball', '/images/ball.png');
 }
 
 function create() {
     //  This creates a simple sprite that is using our loaded image and
     //  displays it on-screen
-    var backgroundImage = game.add.sprite(0, 0, 'background');
+    var backgroundImage = this.add.sprite(0, 0, 'background');
+    backgroundImage.setOrigin(0, 0);
 
-    var ball = game.add.sprite(200, 200, 'ball');
+    ball = this.physics.add.image(200, 200, 'ball');
 
-    game.physics.enable(ball, Phaser.Physics.ARCADE);
+    ball.body.setVelocity(200, 200);
 
-    ball.body.velocity.x = 200;
-    ball.body.velocity.y = 200;
-
-    ball.update = ballUpdate;
-
-    ball.inputEnabled = true;
-    ball.events.onInputDown.add(ballClick, ball);
+    ball.setInteractive();
+    ball.on('pointerdown', ballClick.bind(ball));
+    
+    ball.update = ballUpdate.bind(ball);
 }
 
 function ballUpdate() {
-    if (this.body.position.y + this.height > game.height) {
+    if (this.body.position.y + this.height > game.canvas.height) {
         this.body.velocity.y *= -1;
         console.log("Boing!");
     } 
-    if (this.body.position.x + this.width > game.width) {
+    if (this.body.position.x + this.width > game.canvas.width) {
         this.body.velocity.x *= -1;
         console.log("Boing!")
     }
+}
+
+function update() {
+    ball.update();
 }
 
 function ballClick() {

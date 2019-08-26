@@ -89,6 +89,14 @@ Pas besoin d'explication pour celle-ci, le nom de la fonction parle d'elle-même
 
 ![](https://media.makeameme.org/created/javascript-javascript-everywhere.jpg)
 
+## Comment trouver de l'aide
+
+La documentation Phaser 3 complète se trouve ici:
+
+https://photonstorm.github.io/phaser3-docs/index.html
+
+Tu peux aussi chercher sur Google ta question en ajoutant "Phaser 3". C'est important de spécifier "3" car la version 3 est très différente des anciennes versions. Il faut toujours t'assurer que tu regardes la documentation pour Phaser 3!
+
 ## Exercices d'apprentissage
 
 Maintenant que le jeu de démo fonctionne, tu peux essayer de jouer avec. Le jeu consiste en une balle qui se déplace et rebondit. Quand on clic sur la balle, sa vitesse horizontale (x) s'inverse.
