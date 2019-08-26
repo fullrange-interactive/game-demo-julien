@@ -1,0 +1,23 @@
+{
+  "name": "game-demo",
+  "version": "1.0.0",
+  "description": "Demonstration de l'utilisation de Phaser 2 / Phaser CE sous forme d'un mini-jeu très simple",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/floriansegginger/game-demo.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/floriansegginger/game-demo/issues"
+  },
+  "homepage": "https://github.com/floriansegginger/game-demo#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
