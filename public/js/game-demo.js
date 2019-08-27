@@ -14,6 +14,8 @@ let config = {
     transparent: true
 };
 
+const ballSpeed = 250;
+
 var game = new Phaser.Game(config);
 
 var ball;
@@ -42,7 +44,7 @@ function create() {
     backgroundImage.setOrigin(0, 0);
 
     ball = this.physics.add.image(200, 200, 'ball');
-    ball.body.setVelocity(5, 5);
+    ball.body.setVelocity(ballSpeed, ballSpeed);
 
     cursor = this.input.keyboard.createCursorKeys();
 
@@ -117,7 +119,16 @@ function ballClick() {
 }
 
 function changevelocity(ball) {
-    ball.velocity.x += -1*(posXMouse - posXBall);
-    ball.velocity.y += -1*(posYMouse - posYBall);
-    
+    var MBVelocityX = (posXMouse - posXBall); //BSx
+    var MBVelocityY = (posYMouse - posYBall); //BSy
+    var vectorX = -1*(MBVelocityX); //Vx
+    var vectorY = -1*(MBVelocityY); //Vy
+    var lengthVector = Math.sqrt((vectorX*vectorX)+(vectorY*vectorY));
+    var finalVectorX = vectorX/lengthVector;
+    var finalVectorY = vectorY/lengthVector;
+    console.log("finalVectorX " +finalVectorX);
+    console.log("finalVectorY " +finalVectorY);
+    ball.velocity.x = finalVectorX*ballSpeed;
+    ball.velocity.y = finalVectorY*ballSpeed;
+   
 }
