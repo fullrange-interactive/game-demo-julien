@@ -31,13 +31,15 @@ function preload() {
 }
 
 function create() {
+
     //  This creates a simple sprite that is using our loaded image and
     //  displays it on-screen
     var backgroundImage = this.add.sprite(0, 0, 'background');
     backgroundImage.setOrigin(0, 0);
 
     ball = this.physics.add.image(200, 200, 'ball');
-
+    ball.setBounce(1);
+    ball.setCollideWorldBounds(true);
     ball.body.setVelocity(200, 200);
 
     ball.setInteractive();
