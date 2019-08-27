@@ -38,9 +38,9 @@ function create() {
     backgroundImage.setOrigin(0, 0);
 
     ball = this.physics.add.image(200, 200, 'ball');
-    ball.setBounce(1);
-    ball.setCollideWorldBounds(true);
     ball.body.setVelocity(200, 200);
+
+    cursor = this.input.keyboard.createCursorKeys();
 
     ball.setInteractive();
     ball.on('pointerdown', ballClick.bind(ball));
@@ -52,18 +52,31 @@ function ballUpdate() {
     if (this.body.position.y + this.height > game.canvas.height) {
         this.body.velocity.y *= -1;
         console.log("Boing!");
-    } 
+    }
     if (this.body.position.x + this.width > game.canvas.width) {
         this.body.velocity.x *= -1;
-        console.log("Boing!")
+        console.log("Boing!");
     }
+    if (this.body.position.x + this.width <= this.width) {
+        this.body.velocity.x *= -1;
+        console.log("Boing!");
+    }
+    if (this.body.position.y + this.height <= this.height) {
+        this.body.velocity.y *= -1;
+        console.log("Boing!");
+    }
+
+
     this.angle +=2;
 }
 
 function update() {
     ball.update();
+   
 }
 
 function ballClick() {
     this.body.velocity.x *= -1;
+    var pointer = this.input.activePointer;
+    
 }
