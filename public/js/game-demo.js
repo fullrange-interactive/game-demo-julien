@@ -57,6 +57,7 @@ function ballUpdate() {
         this.body.velocity.x *= -1;
         console.log("Boing!")
     }
+    this.angle +=2;
 }
 
 function update() {
