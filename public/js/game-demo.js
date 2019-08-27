@@ -57,11 +57,11 @@ function ballUpdate() {
         this.body.velocity.x *= -1;
         console.log("Boing!");
     }
-    if (this.body.position.x + this.width <= this.width) {
+    if (this.body.position.x + this.width < this.width) {
         this.body.velocity.x *= -1;
         console.log("Boing!");
     }
-    if (this.body.position.y + this.height <= this.height) {
+    if (this.body.position.y + this.height < this.height) {
         this.body.velocity.y *= -1;
         console.log("Boing!");
     }
@@ -72,11 +72,38 @@ function ballUpdate() {
 
 function update() {
     ball.update();
+
    
 }
 
 function ballClick() {
     this.body.velocity.x *= -1;
-    var pointer = this.input.activePointer;
-    
+   
+    var posXBall = this.body.position.x + this.body.width / 2;
+    var posYBall = this.body.position.y + this.body.height / 2;
+    console.log("posXBall " + posXBall);
+    console.log("posYBall " + posYBall);
+
+    var pointer = game.input.activePointer;
+    var posXMouse = pointer.x;
+    var posYMouse = pointer.y;
+    console.log("PosXMouse " +posXMouse);
+    console.log("PosYMouse " +posYMouse);
+
+    if (posXBall < posXMouse && posYBall > posYMouse) { // corner top right
+        console.log("cadrant haut droit");
+    }
+    if (posXBall < posXMouse && posYBall < posYMouse) { // corner bottom right
+        console.log("cadrant bas droit");
+    }
+    if (posXBall > posXMouse && posYBall > posYMouse) { // corner top left
+        console.log("cadrant haut gauche");
+    }
+    if (posXBall > posXMouse && posYBall < posYMouse) { // corner bottom left
+        console.log("cadrant bas gauche");
+    }
+    if (posXBall == posXMouse || posYBall == posYMouse) {  // Middle, nothing happen
+        console.log("Au milieu, rien ce se passe");
+    }
+
 }
