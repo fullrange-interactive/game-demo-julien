@@ -17,6 +17,10 @@ let config = {
 var game = new Phaser.Game(config);
 
 var ball;
+var posXMouse;
+var posYMouse;
+var posXBall;
+var posYBall;
 
 function preload() {
 
@@ -38,7 +42,7 @@ function create() {
     backgroundImage.setOrigin(0, 0);
 
     ball = this.physics.add.image(200, 200, 'ball');
-    ball.body.setVelocity(200, 200);
+    ball.body.setVelocity(5, 5);
 
     cursor = this.input.keyboard.createCursorKeys();
 
@@ -79,31 +83,41 @@ function update() {
 function ballClick() {
     this.body.velocity.x *= -1;
    
-    var posXBall = this.body.position.x + this.body.width / 2;
-    var posYBall = this.body.position.y + this.body.height / 2;
+    posXBall= this.body.position.x + this.body.width / 2;
+    posYBall = this.body.position.y + this.body.height / 2;
     console.log("posXBall " + posXBall);
     console.log("posYBall " + posYBall);
 
     var pointer = game.input.activePointer;
-    var posXMouse = pointer.x;
-    var posYMouse = pointer.y;
+    posXMouse = pointer.x;
+    posYMouse = pointer.y;
     console.log("PosXMouse " +posXMouse);
     console.log("PosYMouse " +posYMouse);
 
     if (posXBall < posXMouse && posYBall > posYMouse) { // corner top right
         console.log("cadrant haut droit");
+         changevelocity(this.body);
     }
     if (posXBall < posXMouse && posYBall < posYMouse) { // corner bottom right
         console.log("cadrant bas droit");
+        changevelocity(this.body);
     }
     if (posXBall > posXMouse && posYBall > posYMouse) { // corner top left
         console.log("cadrant haut gauche");
+        changevelocity(this.body);
     }
     if (posXBall > posXMouse && posYBall < posYMouse) { // corner bottom left
         console.log("cadrant bas gauche");
+        changevelocity(this.body);
     }
     if (posXBall == posXMouse || posYBall == posYMouse) {  // Middle, nothing happen
         console.log("Au milieu, rien ce se passe");
     }
 
+}
+
+function changevelocity(ball) {
+    ball.velocity.x += -1*(posXMouse - posXBall);
+    ball.velocity.y += -1*(posYMouse - posYBall);
+    
 }
