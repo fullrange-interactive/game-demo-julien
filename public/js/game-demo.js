@@ -14,7 +14,7 @@ let config = {
     transparent: true
 };
 
-const ballSpeed = 200;
+const ballSpeed = 350;
 
 var game = new Phaser.Game(config);
 
@@ -46,12 +46,19 @@ function create() {
     ball = this.physics.add.image(200, 200, 'ball');
     ball.body.setVelocity(ballSpeed, ballSpeed);
 
+    ball2 = this.physics.add.image(463, 99, 'ball');
+    ball2.body.setVelocity(450, 450);
+
     cursor = this.input.keyboard.createCursorKeys();
 
     ball.setInteractive();
     ball.on('pointerdown', ballClick.bind(ball));
+
+    ball2.setInteractive();
+    ball2.on('pointerdown', ballClick.bind(ball2));
     
     ball.update = ballUpdate.bind(ball);
+    ball2.update = ballUpdate.bind(ball2);
 }
 
 function ballUpdate() {
@@ -61,28 +68,24 @@ function ballUpdate() {
     if (this.body.position.y + this.height > game.canvas.height) {
         this.body.velocity.y *= -1;
         this.body.position.y = game.canvas.height - (this.height + 5);
-        console.log("fonctionneY1");
-        //console.log("Boing!");
+        console.log("bas");
     }
     if (this.body.position.x + this.width > game.canvas.width) {
         this.body.velocity.x *= -1;
         this.body.position.x = game.canvas.width - (this.height + 5);
-        console.log("fonctionneX1");
-        //console.log("Boing!");
+        console.log("droite");
     }
     if (this.body.position.x + this.width < this.width) {
         this.body.velocity.x *= -1;
-        this.body.position.x + this.width + 5;
-        console.log("fonctionneX2");
+        this.body.position.x++;
+        console.log("gauche");
 
-        //console.log("Boing!");
     }
     if (this.body.position.y + this.height < this.height) {
         this.body.velocity.y *= -1;
-        this.body.position.y + this.height + 5;
-        console.log("fonctionneY2");
+        this.body.position.y++;
+        console.log("haut");
         }
-        //console.log("Boing!");
 
 
     this.angle +=2;
@@ -90,6 +93,7 @@ function ballUpdate() {
 
 function update() {
     ball.update();
+    ball2.update();
 
    
 }
