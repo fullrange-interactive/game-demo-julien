@@ -14,7 +14,7 @@ let config = {
     transparent: true
 };
 
-const ballSpeed = 250;
+const ballSpeed = 200;
 
 var game = new Phaser.Game(config);
 
@@ -55,22 +55,34 @@ function create() {
 }
 
 function ballUpdate() {
+
+    // It checks the ball's position. If it's out border, it brings it back.
+    // The speed will remain the same.
     if (this.body.position.y + this.height > game.canvas.height) {
         this.body.velocity.y *= -1;
-        console.log("Boing!");
+        this.body.position.y = game.canvas.height - (this.height + 5);
+        console.log("fonctionneY1");
+        //console.log("Boing!");
     }
     if (this.body.position.x + this.width > game.canvas.width) {
         this.body.velocity.x *= -1;
-        console.log("Boing!");
+        this.body.position.x = game.canvas.width - (this.height + 5);
+        console.log("fonctionneX1");
+        //console.log("Boing!");
     }
     if (this.body.position.x + this.width < this.width) {
         this.body.velocity.x *= -1;
-        console.log("Boing!");
+        this.body.position.x + this.width + 5;
+        console.log("fonctionneX2");
+
+        //console.log("Boing!");
     }
     if (this.body.position.y + this.height < this.height) {
         this.body.velocity.y *= -1;
-        console.log("Boing!");
-    }
+        this.body.position.y + this.height + 5;
+        console.log("fonctionneY2");
+        }
+        //console.log("Boing!");
 
 
     this.angle +=2;
@@ -119,12 +131,12 @@ function ballClick() {
 }
 
 function changevelocity(ball) {
-    var MBVelocityX = (posXMouse - posXBall); //BSx
-    var MBVelocityY = (posYMouse - posYBall); //BSy
-    var vectorX = -1*(MBVelocityX); //Vx
-    var vectorY = -1*(MBVelocityY); //Vy
-    var lengthVector = Math.sqrt((vectorX*vectorX)+(vectorY*vectorY));
-    var finalVectorX = vectorX/lengthVector;
+    var MBVelocityX = (posXMouse - posXBall); //BSx -> Sx - Bx
+    var MBVelocityY = (posYMouse - posYBall); //BSy -> Sy - By
+    var vectorX = -1*(MBVelocityX); //Vx -> -Sx + Bx
+    var vectorY = -1*(MBVelocityY); //Vy -> -Sy + By
+    var lengthVector = Math.sqrt((vectorX*vectorX)+(vectorY*vectorY)); //square root of Vx*Vx + Vy*Vy
+    var finalVectorX = vectorX/lengthVector; 
     var finalVectorY = vectorY/lengthVector;
     console.log("finalVectorX " +finalVectorX);
     console.log("finalVectorY " +finalVectorY);
