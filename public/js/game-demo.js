@@ -74,7 +74,7 @@ function create() {
 }
 
 function addBall(world) {
-    
+
     var pointer = game.input.activePointer;
     /* randomSpeedX defines randomly the velocity of newBall.
        When the play add a new ball, it can goes in every direction
@@ -84,16 +84,27 @@ function addBall(world) {
     var randomSpeed2 = 0;
     randomSpeed1 = Math.random() * (450 - -150) + -150;
     randomSpeed2 = Math.random() * (450 - -150) + -150;
-    
+
     while (randomSpeed1 == 0 || randomSpeed2 == 0) {
         randomSpeed1 = Math.random() * (450 - -150) + -150;
         randomSpeed2 = Math.random() * (450 - -150) + -150;
     }
-    newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
-    newBall.body.setVelocity(randomSpeed1, randomSpeed2);
-    newBall.setInteractive();
-    newBall.on('pointerdown', ballClick.bind(newBall));
-    ballArray.push(newBall);
+
+
+    if (ballArray.length >= 25)
+    {
+        console.log("Too much balls, deleting the last one");
+        ballArray.pop();
+    }
+    else 
+    {
+        newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
+        newBall.body.setVelocity(randomSpeed1, randomSpeed2);
+        newBall.setInteractive();
+        newBall.on('pointerdown', ballClick.bind(newBall));
+        ballArray.push(newBall);
+    }
+
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update = ballUpdate.bind(ballArray[i]);
     }
@@ -134,6 +145,13 @@ function ballUpdate() {
 function update() {
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update();
+        for (let j = 0; j < ballArray.length; j++) {
+        if (this.physics.add.collider(ballArray[i], ballArray[j]) == true){
+            console.log("i'm in");
+            ballArray.splice(0, i);
+            ballArray.splice(0, j);
+        }
+        }
     }
 }
 
