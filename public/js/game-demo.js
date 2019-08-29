@@ -19,6 +19,9 @@ const ballSpeed = 350;
 var game = new Phaser.Game(config);
 
 var ball;
+var ball2;
+var newBall;
+var ballArray = [];
 var posXMouse;
 var posYMouse;
 var posXBall;
@@ -43,70 +46,97 @@ function create() {
     var backgroundImage = this.add.sprite(0, 0, 'background');
     backgroundImage.setOrigin(0, 0);
 
-    ball = this.physics.add.image(200, 200, 'ball');
+    let pointer = game.input.activePointer;
+
+    ball = this.physics.add.sprite(200, 200, 'ball');
     ball.body.setVelocity(ballSpeed, ballSpeed);
+    ballArray.push(ball);
 
-    ball2 = this.physics.add.image(463, 99, 'ball');
-    ball2.body.setVelocity(450, 450);
+    ball2 = this.physics.add.sprite(465, 367, 'ball');
+    ball2.body.setVelocity(-ballSpeed, -ballSpeed);
+    ballArray.push(ball2);
 
-    cursor = this.input.keyboard.createCursorKeys();
+    let cursor = this.input.keyboard.createCursorKeys();
 
     ball.setInteractive();
     ball.on('pointerdown', ballClick.bind(ball));
 
     ball2.setInteractive();
     ball2.on('pointerdown', ballClick.bind(ball2));
+
+    backgroundImage.setInteractive();
+    backgroundImage.on('pointerdown', addBall.bind(this));
     
-    ball.update = ballUpdate.bind(ball);
-    ball2.update = ballUpdate.bind(ball2);
+    for (let i = 0; i < ballArray.length; i++) {
+    ballArray[i].update = ballUpdate.bind(ballArray[i]);
+    }
+    
+}
+
+function addBall(world) {
+    
+    var pointer = game.input.activePointer;
+
+    newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
+    newBall.body.setVelocity(ballSpeed, -ballSpeed);
+    newBall.setInteractive();
+    ballArray.push(newBall);
+    for (let i = 0; i < ballArray.length; i++) {
+        ballArray[i].update = ballUpdate.bind(ballArray[i]);
+    }
+    
+
+    
+    
+
+    console.log(ballArray);
+
+
 }
 
 function ballUpdate() {
-
     // It checks the ball's position. If it's out border, it brings it back.
     // The speed will remain the same.
     if (this.body.position.y + this.height > game.canvas.height) {
-        this.body.velocity.y *= -1;
         this.body.position.y = game.canvas.height - (this.height + 5);
+        this.body.velocity.y *= -1;
         console.log("bas");
     }
     if (this.body.position.x + this.width > game.canvas.width) {
-        this.body.velocity.x *= -1;
         this.body.position.x = game.canvas.width - (this.height + 5);
+        this.body.velocity.x *= -1;
         console.log("droite");
     }
     if (this.body.position.x + this.width < this.width) {
-        this.body.velocity.x *= -1;
         this.body.position.x++;
+        this.body.velocity.x *= -1;
         console.log("gauche");
 
     }
     if (this.body.position.y + this.height < this.height) {
+        this.body.position.y += 5;
         this.body.velocity.y *= -1;
-        this.body.position.y++;
         console.log("haut");
         }
-
 
     this.angle +=2;
 }
 
 function update() {
-    ball.update();
-    ball2.update();
-
-   
+    for (let i = 0; i < ballArray.length; i++) {
+        ballArray[i].update();
+    }
 }
 
 function ballClick() {
     this.body.velocity.x *= -1;
    
-    posXBall= this.body.position.x + this.body.width / 2;
+    posXBall = this.body.position.x + this.body.width / 2;
     posYBall = this.body.position.y + this.body.height / 2;
     console.log("posXBall " + posXBall);
     console.log("posYBall " + posYBall);
 
-    var pointer = game.input.activePointer;
+    let pointer = game.input.activePointer;
     posXMouse = pointer.x;
     posYMouse = pointer.y;
     console.log("PosXMouse " +posXMouse);
@@ -148,3 +178,5 @@ function changevelocity(ball) {
     ball.velocity.y = finalVectorY*ballSpeed;
    
 }
+
+
