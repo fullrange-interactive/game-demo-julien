@@ -76,18 +76,27 @@ function create() {
 function addBall(world) {
     
     var pointer = game.input.activePointer;
-
+    /* randomSpeedX defines randomly the velocity of newBall.
+       When the play add a new ball, it can goes in every direction
+       and at any speed
+    */ 
+    var randomSpeed1 = 0;
+    var randomSpeed2 = 0;
+    randomSpeed1 = Math.random() * (450 - -150) + -150;
+    randomSpeed2 = Math.random() * (450 - -150) + -150;
+    
+    while (randomSpeed1 == 0 || randomSpeed2 == 0) {
+        randomSpeed1 = Math.random() * (450 - -150) + -150;
+        randomSpeed2 = Math.random() * (450 - -150) + -150;
+    }
     newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
-    newBall.body.setVelocity(ballSpeed, -ballSpeed);
+    newBall.body.setVelocity(randomSpeed1, randomSpeed2);
     newBall.setInteractive();
+    newBall.on('pointerdown', ballClick.bind(newBall));
     ballArray.push(newBall);
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update = ballUpdate.bind(ballArray[i]);
     }
-    
-
-    
-    
 
     console.log(ballArray);
 
