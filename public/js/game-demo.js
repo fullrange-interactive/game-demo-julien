@@ -26,6 +26,7 @@ var posXMouse;
 var posYMouse;
 var posXBall;
 var posYBall;
+var balls;
 
 function preload() {
 
@@ -50,7 +51,7 @@ function create() {
     let pointer = game.input.activePointer;
     let cursor = this.input.keyboard.createCursorKeys();
 
-    var balls = this.physics.add.group({
+    balls = this.physics.add.group({
         key: 'ball',
         setXY: {
             x: 200,
@@ -100,16 +101,18 @@ function addBall(world) {
 
     if (ballArray.length < 25) {
         newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
+        balls.add(newBall);
         newBall.body.setVelocity(randomSpeed1, randomSpeed2);
-        newBall.setInteractive();
-        newBall.on('pointerdown', ballClick.bind(newBall));
         ballArray.push(newBall);
+        
         for (let i = 0; i < ballArray.length; i++) {
             ballArray[i].update = ballUpdate.bind(ballArray[i]);
         }
     } else if (ballArray.length >= 25) {
         console.log("nothing happens.");
     }
+
+    console.log(balls);
 }
 
 function ballUpdate() {
