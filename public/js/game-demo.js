@@ -67,7 +67,6 @@ function create() {
         children[i].setInteractive();
         children[i].on('pointerdown', ballClick.bind(children[i]));
         ballArray.push(children[i]);
-
     };
     
 
@@ -101,21 +100,12 @@ function addBall(world) {
     if (ballArray.length < 25) {
         newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
         balls.add(newBall);
+        newBall.setInteractive();
+        newBall.on('pointerdown', ballClick.bind(newBall));
         newBall.body.setVelocity(randomSpeed1, randomSpeed2);
         ballArray.push(newBall);
 
-        let children = balls.getChildren();
-
-        for (let i = 0; i < children.length; i++) {
-            children[i].setInteractive();
-            children[i].on('pointerdown', ballClick.bind(children[i]));
-            ballArray.push(children[i]);
-    
-        };
-
         for (let i = 0; i < ballArray.length; i++) {
-
-            ballArray[i].on('pointerdown', ballClick.bind(ballArray[i]));
             ballArray[i].update = ballUpdate.bind(ballArray[i]);
         }
 
@@ -158,7 +148,7 @@ function update() {
 }
 
 function ballHit(firstBall, secondBall) {
-    
+
 }
 
 function ballClick() {
