@@ -18,8 +18,6 @@ const ballSpeed = 350;
 
 var game = new Phaser.Game(config);
 
-var ball;
-var ball2;
 var newBall;
 var ballArray = [];
 var posXMouse;
@@ -69,6 +67,7 @@ function create() {
         children[i].setInteractive();
         children[i].on('pointerdown', ballClick.bind(children[i]));
         ballArray.push(children[i]);
+
     };
     
 
@@ -76,6 +75,7 @@ function create() {
         ballArray[i].update = ballUpdate.bind(ballArray[i]);
     }
 
+    this.physics.add.collider(balls, balls);
     backgroundImage.setInteractive();
     backgroundImage.on('pointerdown', addBall.bind(this));
     
@@ -104,7 +104,7 @@ function addBall(world) {
         balls.add(newBall);
         newBall.body.setVelocity(randomSpeed1, randomSpeed2);
         ballArray.push(newBall);
-        
+
         for (let i = 0; i < ballArray.length; i++) {
             ballArray[i].update = ballUpdate.bind(ballArray[i]);
         }
@@ -112,7 +112,7 @@ function addBall(world) {
         console.log("nothing happens.");
     }
 
-    console.log(balls);
+    console.log(ballArray.length);
 }
 
 function ballUpdate() {
@@ -142,9 +142,6 @@ function ballUpdate() {
 function update() {
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update();
-        for (let j = 0; j < ballArray.length; j++) {
-        this.physics.add.collider(ballArray[i], ballArray[j], ballHit(i, j));
-        }   
     }
 }
 
@@ -176,7 +173,6 @@ function ballClick() {
         changevelocity(this.body);
     }
     if (posXBall == posXMouse || posYBall == posYMouse) {  // Middle, nothing happen
-        console.log
 
 }
 
@@ -186,8 +182,8 @@ function changevelocity(ball) {
     var vectorX = -1*(MBVelocityX); //Vx -> -Sx + Bx
     var vectorY = -1*(MBVelocityY); //Vy -> -Sy + By
     var lengthVector = Math.sqrt((vectorX*vectorX)+(vectorY*vectorY)); //square root of Vx*Vx + Vy*Vy
-    var finalVectorX = vectorX/lengthVector; 
-    var finalVectorY = vectorY/lengthVector;
+    var finalVectorX = (vectorX/lengthVector)+1; 
+    var finalVectorY = (vectorY/lengthVector)+1;
 
     ball.velocity.x = finalVectorX*ballSpeed+5;
     ball.velocity.y = finalVectorY*ballSpeed+5;
