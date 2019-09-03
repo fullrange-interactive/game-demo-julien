@@ -14,20 +14,28 @@ let config = {
     transparent: true
 };
 
-const ballSpeed = 350;
+const ballSpeed = 100;
 
 var game = new Phaser.Game(config);
 
 var balls;
 var newBall;
 var ballArray = [];
-var posXMouse;
-var posYMouse;
+var ballId = 1;
 var posXBall;
 var posYBall;
+
+var posXMouse;
+var posYMouse;
+
 var scoreText;
 var score = 0;
 
+var player;
+var posXPlayer;
+var posYPlayer;
+var rememberX;
+var rememberY;
 
 function preload() {
 
@@ -39,6 +47,7 @@ function preload() {
     //  The second parameter is the URL of the image (relative)
     this.load.image('background', '/images/background.jpg');
     this.load.image('ball', '/images/ball.png');
+    this.load.image('player', '/images/player.png');
 }
 
 function create() {
@@ -59,8 +68,8 @@ function create() {
         setXY: {
             x: 200,
             y: 200,
-            stepX: 25,
-            stepY: 75
+            stepX: 250,
+            stepY: 350
         },
         repeat: 1, 
         velocityX: ballSpeed,
@@ -73,45 +82,40 @@ function create() {
         children[i].setInteractive();
         children[i].on('pointerdown', ballClick.bind(children[i]));
         ballArray.push(children[i]);
+        ballArray[i].setData('ID', ballId);
+        ballId++;
     };
-    
+
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update = ballUpdate.bind(ballArray[i]);
     }
 
-    
-
     backgroundImage.setInteractive();
     backgroundImage.on('pointerdown', addBall.bind(this));
+
+    player = this.physics.add.sprite(150, 150, 'player');
+    player.body.setVelocity(ballSpeed - 50, ballSpeed - 50);
+    player.setScale(1.2);
+
+    // This will be useful only the very first time the distance function is entered
+    rememberX = 200 - player.body.position.x; // 200 is where the first ball spawn on X
+    rememberY = 200 - player.body.position.y; // 200 is where the first ball spawn on Y
+    console.log(rememberX);
 }
 
 function addBall(world) {
 
     var pointer = game.input.activePointer;
-    /* randomSpeedX defines randomly the velocity of newBall.
-       When the play add a new ball, it can goes in every direction
-       and at any speed
-    */ 
-    var randomSpeed1 = 0;
-    var randomSpeed2 = 0;
-    randomSpeed1 = Math.random() * (450 - -150) + -150;
-    randomSpeed2 = Math.random() * (450 - -150) + -150;
-
-    while (randomSpeed1 == 0 || randomSpeed2 == 0) {
-        randomSpeed1 = Math.random() * (450 - -150) + -150;
-        randomSpeed2 = Math.random() * (450 - -150) + -150;
-    }
 
     newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
     balls.add(newBall);
     newBall.setInteractive();
     newBall.on('pointerdown', ballClick.bind(newBall));
-    newBall.body.setVelocity(randomSpeed1, randomSpeed2);
+    newBall.body.setVelocity(ballSpeed, ballSpeed);
     ballArray.push(newBall);
     newBall.update = ballUpdate.bind(newBall);
-
-    console.log(balls);
-    console.log(ballArray.length);
+    ballArray[ballArray.length-1].setData('ID', ballId);
+    ballId++;
 }
 
 function ballUpdate() {
@@ -121,46 +125,58 @@ function ballUpdate() {
     if(typeof(this.body) === 'undefined')
         return;
 
-    let children = balls.getChildren();
-    var nbChild = 0;
-
-    for (let i = 0; i < children.length; i++) {
-       nbChild++;
-    };
-
-    if (nbChild == 0) {
-        ballArray = [];
-        console.log('Nothing Happen');
-    } else {
-
-        if (this.body.position.y + this.height > game.canvas.height) {
-            this.body.position.y = game.canvas.height - (this.height + 5);
-            this.body.velocity.y *= -1;
-        }
-        if (this.body.position.x + this.width > game.canvas.width) {
-            this.body.position.x = game.canvas.width - (this.height + 5);
-            this.body.velocity.x *= -1;
-        }
-        if (this.body.position.x + this.width < this.width) {
-            this.body.position.x++;
-            this.body.velocity.x *= -1;
-    
-        }
-        if (this.body.position.y + this.height < this.height) {
-            this.body.position.y += 5;
-            this.body.velocity.y *= -1;
-        }
-            this.angle +=2;
+    if (this.body.position.y + this.height > game.canvas.height) {
+        this.body.position.y = game.canvas.height - (this.height + 5);
+        this.body.velocity.y *= -1;
     }
+    if (this.body.position.x + this.width > game.canvas.width) {
+        this.body.position.x = game.canvas.width - (this.height + 5);
+        this.body.velocity.x *= -1;
+    }
+    if (this.body.position.x + this.width < this.width) {
+        this.body.position.x++;
+        this.body.velocity.x *= -1;
+    
+    }
+    if (this.body.position.y + this.height < this.height) {
+        this.body.position.y += 5;
+        this.body.velocity.y *= -1;
+    }
+    this.angle +=2;
 }
 
 function update() {
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update();
+        distance(ballArray[i], ballArray[i]);
     }
     this.physics.add.collider(balls, balls, ballHit);
-    
 }
+
+function distance(ballX, ballY) {
+    // If a ball is already deleted when it arrives here
+    // we skip this whole function until the next ball comes here
+    if(typeof(position) === 'undefined')
+    return;
+
+    posXPlayer = player.body.position.x + player.body.width / 2;
+    posYPlayer = player.body.position.y + player.body.width / 2;
+    var posBallXFollow = ballX.body.position.x + ballX.body.width / 2;
+    var posBallYFollow = ballY.body.position.y + ballY.body.width / 2
+
+    var verifX = posBallXFollow - posXPlayer;
+    var verifY = posBallYFollow - posYPlayer;
+
+    if (verifX < rememberX || verifY < rememberY) {
+        console.log("I'm sure he exists")
+    }
+
+
+
+
+
+}
+
 
 function ballHit(firstBall, secondBall) {
     score += 50;
@@ -178,7 +194,7 @@ function ballClick() {
     let pointer = game.input.activePointer;
     posXMouse = pointer.x;
     posYMouse = pointer.y;
-
+    
     if (posXBall < posXMouse && posYBall > posYMouse) { // corner top right
          changevelocity(this.body);
     }
