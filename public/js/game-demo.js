@@ -8,20 +8,23 @@ let config = {
         update: update
     },
     physics: {
-        default: 'arcade'
+        default: 'arcade',
+        arcade: {
+            debug: true
+        }
     },
     parent: 'game',
     transparent: true
 };
 
-const ballSpeed = 100;
+const ballSpeed = 350;
 
 var game = new Phaser.Game(config);
 
 var balls;
 var newBall;
 var ballArray = [];
-var ballId = 1;
+var ballId = 0;
 var posXBall;
 var posYBall;
 
@@ -34,8 +37,6 @@ var score = 0;
 var player;
 var posXPlayer;
 var posYPlayer;
-var rememberX;
-var rememberY;
 
 function preload() {
 
@@ -55,14 +56,18 @@ function create() {
     //  This creates a simple sprite that is using our loaded image and
     //  displays it on-screen
 
+    // Create background and places it
     var backgroundImage = this.add.sprite(0, 0, 'background');
     backgroundImage.setOrigin(0, 0);
     
+    // Set the position of the score and show it's value
     scoreText = this.add.text(16, 16, 'Score: ' +score, { fontSize: '32px', fill: '#000' });
 
+    // Allow the player to use the mouse
     let pointer = game.input.activePointer;
     let cursor = this.input.keyboard.createCursorKeys();
 
+    // A group which will contain every ball
     balls = this.physics.add.group({
         key: 'ball',
         setXY: {
@@ -71,13 +76,14 @@ function create() {
             stepX: 250,
             stepY: 350
         },
-        repeat: 1, 
+        repeat: 0, 
         velocityX: ballSpeed,
         velocityY: ballSpeed
     });
 
     let children = balls.getChildren();
 
+    // Initialize all the balls which were created above
     for (let i = 0; i < children.length; i++) {
         children[i].setInteractive();
         children[i].on('pointerdown', ballClick.bind(children[i]));
@@ -89,24 +95,26 @@ function create() {
     for (let i = 0; i < ballArray.length; i++) {
         ballArray[i].update = ballUpdate.bind(ballArray[i]);
     }
-
+    
+    // The background image is now clickable. It calls the addBall function if clicked
     backgroundImage.setInteractive();
     backgroundImage.on('pointerdown', addBall.bind(this));
 
+    // Create the player and sets it's physics
     player = this.physics.add.sprite(150, 150, 'player');
     player.body.setVelocity(ballSpeed - 50, ballSpeed - 50);
+    player.body.setMaxSpeed(ballSpeed - 50);
     player.setScale(1.2);
-
-    // This will be useful only the very first time the distance function is entered
-    rememberX = 200 - player.body.position.x; // 200 is where the first ball spawn on X
-    rememberY = 200 - player.body.position.y; // 200 is where the first ball spawn on Y
-    console.log(rememberX);
+    player.setBounce(1);
+    player.setCollideWorldBounds(true);
 }
 
 function addBall(world) {
 
     var pointer = game.input.activePointer;
 
+    // Create a new ball, puts it in the ballArray and balls group
+    // It has the same proprety as the initial balls
     newBall = this.physics.add.sprite(pointer.x, pointer.y, 'ball');
     balls.add(newBall);
     newBall.setInteractive();
@@ -146,41 +154,77 @@ function ballUpdate() {
 }
 
 function update() {
-    for (let i = 0; i < ballArray.length; i++) {
+    var l = ballArray.length
+    var shortestDist = null;
+    var shortestBall = null;
+    for (let i = 0; i < l; i++) {
+
+        // If the ball doesn't exists the rest of the function
+        // will not be executed
+        if (typeof(ballArray[i].body) === 'undefined'){
+            console.log("It stopped");
+            continue; // start the for at the next i
+        }
+
+        // Update ball
         ballArray[i].update();
-        distance(ballArray[i], ballArray[i]);
+        player.update();
+
+        for (let j = 0; j < l; j++) {
+            this.physics.add.collider(ballArray[i], ballArray[j], ballHit);
+        }
+
+        // Search for the closest ball
+        var between = distancePlayerBall(player, ballArray[i]);
+
+        if (shortestDist > between || shortestDist === null) {
+            shortestDist = between;
+            shortestBall = ballArray[i];
+        }
     }
-    this.physics.add.collider(balls, balls, ballHit);
+
+    // Change player's direction when a ball is closer than the last one  
+    if (ballArray.length != 0) {
+        movePlayer(player, shortestBall); 
+    }
+     
 }
 
-function distance(ballX, ballY) {
-    // If a ball is already deleted when it arrives here
-    // we skip this whole function until the next ball comes here
-    if(typeof(position) === 'undefined')
-    return;
+function movePlayer(player, ball) {
+    player.body.position.x = ball.body.position.x;
+    player.body.position.y = ball.body.position.y;
 
-    posXPlayer = player.body.position.x + player.body.width / 2;
-    posYPlayer = player.body.position.y + player.body.width / 2;
-    var posBallXFollow = ballX.body.position.x + ballX.body.width / 2;
-    var posBallYFollow = ballY.body.position.y + ballY.body.width / 2
+}
 
-    var verifX = posBallXFollow - posXPlayer;
-    var verifY = posBallYFollow - posYPlayer;
+function distancePlayerBall(posPlayer, posBall) {
 
-    if (verifX < rememberX || verifY < rememberY) {
-        console.log("I'm sure he exists")
-    }
+    // Player's position
+    let posPlayerX = posPlayer.body.position.x;
+    let posPlayerY = posPlayer.body.position.y;
+    
+    // Ball's position
+    let posBallX = posBall.body.position.x;
+    let posBallY = posBall.body.position.y;
 
-
-
-
-
+    // Distance between the current ball and the player
+    let distXPlayerBall = posPlayerX - posBallX;
+    let distYPlayerBall = posPlayerY - posBallY;
+    let dist = Math.sqrt((distXPlayerBall*distXPlayerBall) + (distYPlayerBall*distYPlayerBall));
+    
+    return dist;
 }
 
 
 function ballHit(firstBall, secondBall) {
+    // Update the score
     score += 50;
     scoreText.setText('Score: ' +score);
+ 
+    // Delete the balls from the ballArray
+    ballArray.splice(ballArray.indexOf(firstBall), 1);
+    ballArray.splice(ballArray.indexOf(secondBall), 1);
+    
+    // Delete the balls from the group and the scene
     firstBall.destroy();
     secondBall.destroy();
 }
@@ -208,7 +252,6 @@ function ballClick() {
         changevelocity(this.body);
     }
     if (posXBall == posXMouse || posYBall == posYMouse) {  // Middle, nothing happen
-
 }
 
 function changevelocity(ball) {
